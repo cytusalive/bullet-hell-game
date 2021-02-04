@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 from spritesheet_functions import SpriteSheet
 
 #initialize pygame
@@ -45,11 +46,15 @@ class Player:
 
 class Enemy:
     def __init__(self, x, y, changex, changey):
+        sprite_sheet = SpriteSheet("ghost.png")
+        image = sprite_sheet.get_image(0, 0, 40, 40)
+        self.image = image
         self.xpos = x
         self.ypos = 0
         self.ydes = y
         self.changex = changex
         self.changey = changey
+        self.hp = 100
     
     def move(self):
         if self.ypos < self.ydes:
@@ -64,7 +69,7 @@ class Enemy:
             self.ypos += self.changey
 
     def draw(self):
-        pygame.draw.circle(gamearea, (230, 150, 100), (self.xpos, self.ypos), 8)
+        gamearea.blit(self.image, (self.xpos-20, self.ypos-20))
 
 
 
@@ -82,6 +87,7 @@ class Bullet:
         self.ypos = y
         self.speedx = speedx
         self.speedy = speedy
+        self.power = 10
     
     def __repr__(self):
         return str(self.xpos) + str(self.ypos)
@@ -97,7 +103,13 @@ class Bullet:
             return False
         if self.ypos < 0 or self.ypos > gamearea.get_height():
             return False
+        return True
 
+def hitdetect(bullet, target, hitbox):
+    distance = math.sqrt((target.xpos - bullet.xpos)**2 + (target.ypos - bullet.ypos)**2)
+    if distance < hitbox and distance > -hitbox:
+        return True
+    return False
 
 background = Stage()        
 reisen = Player()
@@ -133,26 +145,42 @@ while True:
     if keys[pygame.K_z]:
         if cd % 5 == 0:
             bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 0, -10))
-
-    to_delete = []
-    for b in range(len(bullets)):
-        if bullets[b].move() == False:
-            to_delete.append(b)
-        bullets[b].draw()
-    
-    to_delete.sort(key=None, reverse=True)
-    for d in to_delete:
-        del bullets[d]
+            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 1, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, -1, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 2, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, -2, -10))
+    elif keys[pygame.K_x]:
+        if cd % 3 == 0:
+            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2 - 6, reisen.ypos, 0, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2 + 6, reisen.ypos, 0, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 0, -10))
+            
+    nbl = []
+    for b in bullets:
+        b.draw()
+        if b.move():
+            nbl.append(b)
+    bullets = nbl
 
     if spawncd % 180 == 0:
-        enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), 3, 1))
+        enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1))
     spawncd += 1
-
-    for ie in range(len(enemies)):
-        ie = len(enemies) - 1 - ie
-        if enemies[ie].ypos > gamearea.get_height():
-            del enemies[ie]
-
+    
+    to_del = []
+    nel = []
+    for e in enemies:
+        if e.ypos < gamearea.get_height() and e.hp > 0:
+            nel.append(e)
+        for bi in range(len(bullets)):
+            bi = len(bullets) - 1 - bi
+            if hitdetect(bullets[bi], e, 25):
+                e.hp -= bullets[bi].power
+                to_del.append(bi)
+    
+    for bi in to_del:
+        del bullets[bi]
+    
+    enemies = nel
     for e in enemies:
         e.move()
         e.draw()
