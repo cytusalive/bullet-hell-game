@@ -43,6 +43,30 @@ class Player:
         else:
             self.ypos += changey
 
+class Enemy:
+    def __init__(self, x, y, changex, changey):
+        self.xpos = x
+        self.ypos = 0
+        self.ydes = y
+        self.changex = changex
+        self.changey = changey
+    
+    def move(self):
+        if self.ypos < self.ydes:
+            self.ypos += 3
+            return
+        else:
+            self.ydes = 0
+            self.xpos += self.changex
+            if self.xpos > gamearea.get_width() or self.xpos < 0:
+                self.changex *= -1
+                self.xpos += self.changex
+            self.ypos += self.changey
+
+    def draw(self):
+        pygame.draw.circle(gamearea, (230, 150, 100), (self.xpos, self.ypos), 8)
+
+
 
 class Stage:
     def __init__(self):
@@ -79,7 +103,10 @@ background = Stage()
 reisen = Player()
 bullets = []
 cd = 0
-    
+
+enemies = []
+spawncd = 0  
+
 while True:
     screen.fill(bgcolor)
     gamearea.fill(gacolor)
@@ -117,7 +144,19 @@ while True:
     for d in to_delete:
         del bullets[d]
 
-    print(bullets)
+    if spawncd % 180 == 0:
+        enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), 3, 1))
+    spawncd += 1
+
+    for ie in range(len(enemies)):
+        ie = len(enemies) - 1 - ie
+        if enemies[ie].ypos > gamearea.get_height():
+            del enemies[ie]
+
+    for e in enemies:
+        e.move()
+        e.draw()
+
     screen.blit(gamearea, (10,10))
     pygame.display.update()
     msElapsed = clock.tick(60)
