@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import math
+from player import Player
 from spritesheet_functions import SpriteSheet
 
 #initialize pygame
@@ -18,31 +19,6 @@ gacolor = (50, 100, 180)
 
 #initialize fps
 clock = pygame.time.Clock()
-
-class Player:
-    def __init__(self):   
-        sprite_sheet = SpriteSheet("character.png")
-        image = sprite_sheet.get_image(0, 0, 30, 47)
-        self.idle = image
-        self.xpos = gamearea.get_width() // 2
-        self.ypos = gamearea.get_height() // 2
-    
-    def draw(self):
-        gamearea.blit(self.idle, (self.xpos, self.ypos))
-
-    def move(self, changex, changey):
-        if self.xpos + self.idle.get_width() + changex > gamearea.get_width():
-            pass
-        elif self.xpos + changex < 0:
-            pass
-        else:
-            self.xpos += changex
-        if self.ypos + self.idle.get_height() + changey > gamearea.get_height():
-            pass
-        elif self.ypos + changey < 0:
-            pass
-        else:
-            self.ypos += changey
 
 class Enemy:
     def __init__(self, x, y, changex, changey):
@@ -112,12 +88,12 @@ def hitdetect(bullet, target, hitbox):
     return False
 
 background = Stage()        
-reisen = Player()
+reisen = Player(gamearea)
 bullets = []
 cd = 0
 
 enemies = []
-spawncd = 0  
+
 
 while True:
     screen.fill(bgcolor)
@@ -132,10 +108,33 @@ while True:
             mousex, mousey = pygame.mouse.get_pos()
 
     keys = pygame.key.get_pressed()
+    moved = False
     if keys[pygame.K_LEFT]:
         reisen.move(-6, 0)
+        moved = True
+        if reisen.direction == "right":
+            reisen.frame = 3
+            reisen.direction = "rightrecover"
+        if reisen.direction == "idle": 
+            reisen.frame = 0
+            reisen.direction = "left"
     if keys[pygame.K_RIGHT]:
         reisen.move(6, 0)
+        moved = True
+        if reisen.direction == "left":
+            reisen.frame = 3
+            reisen.direction = "leftrecover"
+        if reisen.direction == "idle":
+            reisen.frame = 0
+            reisen.direction = "right"
+    if not moved:
+        if reisen.direction == "left":
+            reisen.frame = 3
+            reisen.direction = "leftrecover"
+        if reisen.direction == "right":
+            reisen.frame = 3
+            reisen.direction = "rightrecover"
+    
     if keys[pygame.K_UP]:
         reisen.move(0, -6)
     if keys[pygame.K_DOWN]:
@@ -144,17 +143,17 @@ while True:
     cd += 1
     if keys[pygame.K_z]:
         if cd % 5 == 0:
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 0, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 1, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, -1, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 2, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, -2, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 0, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 1, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -1, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 2, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -2, -10))
     elif keys[pygame.K_x]:
         if cd % 3 == 0:
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2 - 6, reisen.ypos, 0, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2 + 6, reisen.ypos, 0, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.idle.get_width()//2, reisen.ypos, 0, -10))
-            
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 - 6, reisen.ypos, 0, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 + 6, reisen.ypos, 0, -10))
+            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 0, -10))
+
     nbl = []
     for b in bullets:
         b.draw()
@@ -162,9 +161,9 @@ while True:
             nbl.append(b)
     bullets = nbl
 
-    if spawncd % 180 == 0:
+    if cd % 180 == 0:
         enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1))
-    spawncd += 1
+
     
     to_del = []
     nel = []
