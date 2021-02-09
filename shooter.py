@@ -69,7 +69,7 @@ class Bullet:
         return str(self.xpos) + str(self.ypos)
 
     def draw(self):
-        pygame.draw.circle(gamearea, (255, 0, 0), (self.xpos, self.ypos), 6, 2)
+        pygame.draw.circle(gamearea, (255, 100, 150), (self.xpos, self.ypos), 6, 2)
         pygame.draw.circle(gamearea, (255, 255, 255), (self.xpos, self.ypos), 4)
 
     def move(self):
@@ -81,13 +81,13 @@ class Bullet:
             return False
         return True
 
-def hitdetect(bullet, target, hitbox):
+def hitdetect(bullet, target, hitradius):
     distance = math.sqrt((target.xpos - bullet.xpos)**2 + (target.ypos - bullet.ypos)**2)
-    if distance < hitbox and distance > -hitbox:
+    if distance < hitradius and distance > -hitradius:
         return True
     return False
 
-background = Stage()        
+background = Stage()       
 reisen = Player(gamearea)
 bullets = []
 cd = 0
@@ -149,10 +149,9 @@ while True:
             bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 2, -10))
             bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -2, -10))
     elif keys[pygame.K_x]:
-        if cd % 3 == 0:
+        if cd % 2 == 0:
             bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 - 6, reisen.ypos, 0, -10))
             bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 + 6, reisen.ypos, 0, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 0, -10))
 
     nbl = []
     for b in bullets:
@@ -164,6 +163,7 @@ while True:
     if cd % 180 == 0:
         enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1))
 
+    
     
     to_del = []
     nel = []
