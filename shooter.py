@@ -89,7 +89,8 @@ def hitdetect(bullet, target, hitradius):
 
 background = Stage()       
 reisen = Player(gamearea)
-bullets = []
+player_bullets = []
+enemy_bullets = []
 cd = 0
 
 enemies = []
@@ -143,46 +144,57 @@ while True:
     cd += 1
     if keys[pygame.K_z]:
         if cd % 5 == 0:
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 0, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 1, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -1, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 2, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -2, -10))
+            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 0, -10))
+            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 1, -10))
+            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -1, -10))
+            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 2, -10))
+            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -2, -10))
     elif keys[pygame.K_x]:
         if cd % 2 == 0:
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 - 6, reisen.ypos, 0, -10))
-            bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 + 6, reisen.ypos, 0, -10))
+            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 - 6, reisen.ypos, 0, -10))
+            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 + 6, reisen.ypos, 0, -10))
 
     nbl = []
-    for b in bullets:
+    for b in player_bullets:
         b.draw()
         if b.move():
             nbl.append(b)
-    bullets = nbl
+    player_bullets = nbl
 
     if cd % 180 == 0:
         enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1))
 
-    
+
     
     to_del = []
     nel = []
     for e in enemies:
         if e.ypos < gamearea.get_height() and e.hp > 0:
             nel.append(e)
-        for bi in range(len(bullets)):
-            bi = len(bullets) - 1 - bi
-            if hitdetect(bullets[bi], e, 25):
-                e.hp -= bullets[bi].power
+        for bi in range(len(player_bullets)):
+            bi = len(player_bullets) - 1 - bi
+            if hitdetect(player_bullets[bi], e, 25):
+                e.hp -= player_bullets[bi].power
                 to_del.append(bi)
     
     for bi in to_del:
-        del bullets[bi]
+        del player_bullets[bi]
     
     enemies = nel
     for e in enemies:
         e.move()
         e.draw()
+        if cd % 60 == 0 and e.ypos <= 600:
+            enemy_bullets.append(Bullet(e.xpos, e.ypos, (reisen.xpos - e.xpos)//50, (reisen.ypos - e.ypos)//50))
+
+    nbl = []
+    for b in enemy_bullets:
+        b.draw()
+        if b.move():
+            nbl.append(b)
+    enemy_bullets = nbl
+    
+
 
     screen.blit(gamearea, (10,10))
     pygame.display.update()
