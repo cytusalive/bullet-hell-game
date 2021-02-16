@@ -65,7 +65,7 @@ class Player:
 
         self.frame = 0
         self.fps = 0
-        self.xpos = gamearea.get_width() // 2
+        self.xpos = gamearea.get_width() // 2 
         self.ypos = gamearea.get_height() // 2
         self.direction = "idle"
         self.gamearea = gamearea
@@ -73,35 +73,35 @@ class Player:
 
     def draw(self):
         if self.direction == "idle":
-            self.gamearea.blit(self.image[self.frame], (self.xpos, self.ypos))
+            self.gamearea.blit(self.image[self.frame], (self.xpos - 32/2, self.ypos - 47/2))
             self.fps += 1
             if self.fps % 3 == 0:
                 self.frame += 1
             if self.frame == 8:
                 self.frame = 0
         if self.direction == "left":
-            self.gamearea.blit(self.left[self.frame], (self.xpos, self.ypos))
+            self.gamearea.blit(self.left[self.frame], (self.xpos - 32/2, self.ypos - 47/2))
             self.fps += 1
             if self.fps % 3 == 0:
                 self.frame += 1
             if self.frame == 8:
                 self.frame = 3
         if self.direction == "leftrecover":
-            self.gamearea.blit(self.left[self.frame], (self.xpos, self.ypos))
+            self.gamearea.blit(self.left[self.frame], (self.xpos - 32/2, self.ypos - 47/2))
             self.fps += 1
             if self.fps % 3 == 0:
                 self.frame -= 1
             if self.frame == 0:
                 self.direction = "idle"
         if self.direction == "right":
-            self.gamearea.blit(self.right[self.frame], (self.xpos, self.ypos))
+            self.gamearea.blit(self.right[self.frame], (self.xpos - 32/2, self.ypos - 47/2))
             self.fps += 1
             if self.fps % 3 == 0:
                 self.frame += 1
             if self.frame == 8:
                 self.frame = 3
         if self.direction == "rightrecover":
-            self.gamearea.blit(self.right[self.frame], (self.xpos, self.ypos))
+            self.gamearea.blit(self.right[self.frame], (self.xpos - 32/2, self.ypos - 47/2))
             self.fps += 1
             if self.fps % 3 == 0:
                 self.frame -= 1

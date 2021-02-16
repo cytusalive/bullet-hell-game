@@ -144,15 +144,15 @@ while True:
     cd += 1
     if keys[pygame.K_z]:
         if cd % 5 == 0:
-            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 0, -10))
-            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 1, -10))
-            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -1, -10))
-            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, 2, -10))
-            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2, reisen.ypos, -2, -10))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 0, -10))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 1, -10))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, -1, -10))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 2, -10))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, -2, -10))
     elif keys[pygame.K_x]:
         if cd % 2 == 0:
-            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 - 6, reisen.ypos, 0, -10))
-            player_bullets.append(Bullet(reisen.xpos + reisen.image[reisen.frame].get_width()//2 + 6, reisen.ypos, 0, -10))
+            player_bullets.append(Bullet(reisen.xpos - 6, reisen.ypos - 23, 0, -10))
+            player_bullets.append(Bullet(reisen.xpos + 6, reisen.ypos - 23, 0, -10))
 
     nbl = []
     for b in player_bullets:
@@ -185,7 +185,7 @@ while True:
         e.move()
         e.draw()
         if cd % 60 == 0 and e.ypos <= 600:
-            enemy_bullets.append(Bullet(e.xpos, e.ypos, (reisen.xpos - e.xpos)//50, (reisen.ypos - e.ypos)//50))
+            enemy_bullets.append(Bullet(e.xpos, e.ypos, (reisen.xpos - e.xpos)/50, (reisen.ypos - e.ypos)/50))
 
     nbl = []
     for b in enemy_bullets:
@@ -199,3 +199,4 @@ while True:
     screen.blit(gamearea, (10,10))
     pygame.display.update()
     msElapsed = clock.tick(60)
+
