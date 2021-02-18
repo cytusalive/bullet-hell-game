@@ -4,6 +4,8 @@ import random
 import math
 from player import Player
 from spritesheet_functions import SpriteSheet
+from angle_movement import calculate_new_xy
+
 
 #initialize pygame
 pygame.init()
@@ -58,11 +60,11 @@ class Stage:
 
 
 class Bullet:
-    def __init__(self, x, y, speedx, speedy):
+    def __init__(self, x, y, speed, angle):
         self.xpos = x
         self.ypos = y
-        self.speedx = speedx
-        self.speedy = speedy
+        self.speed = speed
+        self.angle = angle
         self.power = 10
     
     def __repr__(self):
@@ -73,8 +75,7 @@ class Bullet:
         pygame.draw.circle(gamearea, (255, 255, 255), (self.xpos, self.ypos), 4)
 
     def move(self):
-        self.xpos += self.speedx
-        self.ypos += self.speedy
+        self.xpos, self.ypos = calculate_new_xy(self.xpos, self.ypos, self.speed, self.angle)
         if self.xpos < 0 or self.xpos > gamearea.get_width():
             return False
         if self.ypos < 0 or self.ypos > gamearea.get_height():
@@ -94,7 +95,6 @@ enemy_bullets = []
 cd = 0
 
 enemies = []
-
 
 while True:
     screen.fill(bgcolor)
@@ -144,15 +144,15 @@ while True:
     cd += 1
     if keys[pygame.K_z]:
         if cd % 5 == 0:
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 0, -10))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 1, -10))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, -1, -10))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 2, -10))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, -2, -10))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 10, math.radians(-90)))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 10, math.radians(-85)))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 10, math.radians(-95)))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 10, math.radians(-80)))
+            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 10, math.radians(-100)))
     elif keys[pygame.K_x]:
         if cd % 2 == 0:
-            player_bullets.append(Bullet(reisen.xpos - 6, reisen.ypos - 23, 0, -10))
-            player_bullets.append(Bullet(reisen.xpos + 6, reisen.ypos - 23, 0, -10))
+            player_bullets.append(Bullet(reisen.xpos - 6, reisen.ypos - 23, 10, math.radians(-90)))
+            player_bullets.append(Bullet(reisen.xpos + 6, reisen.ypos - 23, 10, math.radians(-90)))
 
     nbl = []
     for b in player_bullets:
