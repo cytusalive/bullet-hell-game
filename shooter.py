@@ -4,7 +4,7 @@ import random
 import math
 from player import Player
 from spritesheet_functions import SpriteSheet
-from angle_movement import calculate_new_xy
+from angle_movement import calculate_new_xy, find_angle
 
 
 #initialize pygame
@@ -185,7 +185,8 @@ while True:
         e.move()
         e.draw()
         if cd % 60 == 0 and e.ypos <= 600:
-            enemy_bullets.append(Bullet(e.xpos, e.ypos, (reisen.xpos - e.xpos)/50, (reisen.ypos - e.ypos)/50))
+            angle = find_angle(e.xpos, e.ypos, reisen.xpos, reisen.ypos)
+            enemy_bullets.append(Bullet(e.xpos, e.ypos, 8, angle))
 
     nbl = []
     for b in enemy_bullets:
