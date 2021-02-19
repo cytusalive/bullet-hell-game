@@ -108,14 +108,15 @@ cd = 0
 # variable of player state
 focusfire = False
 
+# pausing/ending
+pause = True
 
 while True:
-    # draw screen, game area, stage background, player
+    # draw screen, game area, stage background
     screen.fill(bgcolor)
     gamearea.fill(gacolor)
     background.draw()
-    reisen.draw(focusfire)
-    
+     
     # properly exit when closed
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -126,135 +127,146 @@ while True:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mousex, mousey = pygame.mouse.get_pos()
 
+        # pause/unpause on ESC
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pause = not pause 
+
     # find a list of keys being pressed
     keys = pygame.key.get_pressed()
-    
-    # preparing movement from key press
-    # determine speed from player state
-    if focusfire:
-        playerspeed = 3
+
+    if pause:
+        pass
     else:
-        playerspeed = 6
-
-    # to use for transitioning between moving and idling
-    moved = False
-
-    # if direction key is pressed
-    # move in the direction
-    # play the next frame in movement animation
-    # if changing direction from left or right
-    # set frame to play part of current direction animation backwards as recovery animation
-    if keys[pygame.K_LEFT]:
-        reisen.move(-playerspeed, 0)
-        moved = True
-        if reisen.direction == "right":
-            reisen.frame = 3
-            reisen.direction = "rightrecover"
-        if reisen.direction == "idle": 
-            reisen.frame = 0
-            reisen.direction = "left"
-    if keys[pygame.K_RIGHT]:
-        reisen.move(playerspeed, 0)
-        moved = True
-        if reisen.direction == "left":
-            reisen.frame = 3
-            reisen.direction = "leftrecover"
-        if reisen.direction == "idle":
-            reisen.frame = 0
-            reisen.direction = "right"
-
-    # if no direction is pressed
-    # if player was moving before
-    # play recovery animation until back to idle
-    if not moved:
-        if reisen.direction == "left":
-            reisen.frame = 3
-            reisen.direction = "leftrecover"
-        if reisen.direction == "right":
-            reisen.frame = 3
-            reisen.direction = "rightrecover"
-    
-    # moving up and down with respective keys
-    if keys[pygame.K_UP]:
-        reisen.move(0, -playerspeed)
-    if keys[pygame.K_DOWN]:
-        reisen.move(0, playerspeed)
-    
-    # switching between default spread firing or focused firing from player input
-    cd += 1
-    focusfire = False
-    if keys[pygame.K_z]:
-        if cd % 5 == 0:
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-90)))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-85)))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-95)))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-80)))
-            player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-100)))
-    elif keys[pygame.K_x]:
-        focusfire = True
-        if cd % 5 == 0:
-            player_bullets.append(Bullet(reisen.xpos - 12, reisen.ypos - 18, 8, math.radians(-90)))
-            player_bullets.append(Bullet(reisen.xpos + 12, reisen.ypos - 18, 8, math.radians(-90)))
-            player_bullets.append(Bullet(reisen.xpos - 6, reisen.ypos - 23, 8, math.radians(-90)))
-            player_bullets.append(Bullet(reisen.xpos + 6, reisen.ypos - 23, 8, math.radians(-90)))
-
-
-    # removing out of screen bullets with new list
-    nbl = []
-    for b in player_bullets:
-        b.draw()
-        if b.move():
-            nbl.append(b)
-    player_bullets = nbl
-
-    # enemy spawn timer
-    if cd % 180 == 0:
-        enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1))
-    
-    # remove enemies when out of screen or hp drop to 0
-    to_del = []
-    nel = []
-    for e in enemies:
-        if e.ypos < gamearea.get_height() and e.hp > 0:
-            nel.append(e)
-        # add index of bullet to delete list if in contact with enemy
-        for bi in range(len(player_bullets)):
-            bi = len(player_bullets) - 1 - bi
-            if hitdetect(player_bullets[bi], e, 25):
-                e.hp -= player_bullets[bi].power
-                to_del.append(bi)
-    
-    # delete bullets in the contact list
-    for bi in to_del:
-        del player_bullets[bi]
-    
-    # moving enemy
-    enemies = nel
-    for e in enemies:
-        e.move()
-        e.draw()
-        # fires a bullet directly at player by using angle movement functions
-        if cd % 60 == 0 and e.ypos <= 600:
-            angle = find_angle(e.xpos, e.ypos, reisen.xpos, reisen.ypos)
-            enemy_bullets.append(Bullet(e.xpos, e.ypos, 3, angle, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
-
-    # player hitbox
-    nbl = []
-    for b in enemy_bullets:
-        if hitdetect(b, reisen, 10):
-            reisen.hp -= b.power
-            continue
+        # preparing movement from key press
+        # determine speed from player state
+        if focusfire:
+            playerspeed = 3
         else:
-            nbl.append(b)
-    enemy_bullets = nbl
+            playerspeed = 6
 
-    # remove bullets if out of screen
-    nbl = []
-    for b in enemy_bullets:
-        b.draw()
-        if b.move():
-            nbl.append(b)
-    enemy_bullets = nbl
+        # to use for transitioning between moving and idling
+        moved = False
+
+        # if direction key is pressed
+        # move in the direction
+        # play the next frame in movement animation
+        # if changing direction from left or right
+        # set frame to play part of current direction animation backwards as recovery animation
+        if keys[pygame.K_LEFT]:
+            reisen.move(-playerspeed, 0)
+            moved = True
+            if reisen.direction == "right":
+                reisen.frame = 3
+                reisen.direction = "rightrecover"
+            if reisen.direction == "idle": 
+                reisen.frame = 0
+                reisen.direction = "left"
+        if keys[pygame.K_RIGHT]:
+            reisen.move(playerspeed, 0)
+            moved = True
+            if reisen.direction == "left":
+                reisen.frame = 3
+                reisen.direction = "leftrecover"
+            if reisen.direction == "idle":
+                reisen.frame = 0
+                reisen.direction = "right"
+
+        # if no direction is pressed
+        # if player was moving before
+        # play recovery animation until back to idle
+        if not moved:
+            if reisen.direction == "left":
+                reisen.frame = 3
+                reisen.direction = "leftrecover"
+            if reisen.direction == "right":
+                reisen.frame = 3
+                reisen.direction = "rightrecover"
+        
+        # moving up and down with respective keys
+        if keys[pygame.K_UP]:
+            reisen.move(0, -playerspeed)
+        if keys[pygame.K_DOWN]:
+            reisen.move(0, playerspeed)
+        
+        # draw player
+        reisen.draw(focusfire)
+
+        # switching between default spread firing or focused firing from player input
+        cd += 1
+        focusfire = False
+        if keys[pygame.K_z]:
+            if cd % 5 == 0:
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-90)))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-85)))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-95)))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-80)))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-100)))
+        elif keys[pygame.K_x]:
+            focusfire = True
+            if cd % 5 == 0:
+                player_bullets.append(Bullet(reisen.xpos - 12, reisen.ypos - 18, 8, math.radians(-90)))
+                player_bullets.append(Bullet(reisen.xpos + 12, reisen.ypos - 18, 8, math.radians(-90)))
+                player_bullets.append(Bullet(reisen.xpos - 6, reisen.ypos - 23, 8, math.radians(-90)))
+                player_bullets.append(Bullet(reisen.xpos + 6, reisen.ypos - 23, 8, math.radians(-90)))
+
+
+        # removing out of screen bullets with new list
+        nbl = []
+        for b in player_bullets:
+            b.draw()
+            if b.move():
+                nbl.append(b)
+        player_bullets = nbl
+
+        # enemy spawn timer
+        if cd % 180 == 0:
+            enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1))
+        
+        # remove enemies when out of screen or hp drop to 0
+        to_del = []
+        nel = []
+        for e in enemies:
+            if e.ypos < gamearea.get_height() and e.hp > 0:
+                nel.append(e)
+            # add index of bullet to delete list if in contact with enemy
+            for bi in range(len(player_bullets)):
+                bi = len(player_bullets) - 1 - bi
+                if hitdetect(player_bullets[bi], e, 25):
+                    e.hp -= player_bullets[bi].power
+                    to_del.append(bi)
+        
+        # delete bullets in the contact list
+        for bi in to_del:
+            del player_bullets[bi]
+        
+        # moving enemy
+        enemies = nel
+        for e in enemies:
+            e.move()
+            e.draw()
+            # fires a bullet directly at player by using angle movement functions
+            if cd % 60 == 0 and e.ypos <= 600:
+                angle = find_angle(e.xpos, e.ypos, reisen.xpos, reisen.ypos)
+                enemy_bullets.append(Bullet(e.xpos, e.ypos, 3, angle, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
+
+        # player hitbox
+        nbl = []
+        for b in enemy_bullets:
+            if hitdetect(b, reisen, 10):
+                reisen.hp -= b.power
+                continue
+            else:
+                nbl.append(b)
+        enemy_bullets = nbl
+
+        # remove bullets if out of screen
+        nbl = []
+        for b in enemy_bullets:
+            b.draw()
+            if b.move():
+                nbl.append(b)
+        enemy_bullets = nbl
     
     # draw everything on to the screen and tick for 60 fps
     screen.blit(gamearea, (10,10))
