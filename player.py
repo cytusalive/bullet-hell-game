@@ -109,15 +109,15 @@ class Player:
                 self.direction = "idle"
             
     def move(self, changex, changey):
-        if self.xpos + self.idle[self.frame].get_width() + changex > self.gamearea.get_width():
+        if self.xpos + 32/2 + changex > self.gamearea.get_width():
             pass
-        elif self.xpos + changex < 0:
+        elif self.xpos - 32/2 + changex < 0:
             pass
         else:
             self.xpos += changex
-        if self.ypos + self.idle[self.frame].get_height() + changey > self.gamearea.get_height():
+        if self.ypos + 47/2 + changey > self.gamearea.get_height():
             pass
-        elif self.ypos + changey < 0:
+        elif self.ypos - 47/2  + changey < 0:
             pass
         else:
             self.ypos += changey
