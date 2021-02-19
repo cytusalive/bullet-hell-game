@@ -70,8 +70,9 @@ class Player:
         self.direction = "idle"
         self.gamearea = gamearea
         self.image = self.idle
+        self.hp = 50
 
-    def draw(self):
+    def draw(self, focusfire):
         if self.direction == "idle":
             self.gamearea.blit(self.image[self.frame], (self.xpos - 32/2, self.ypos - 47/2))
             self.fps += 1
@@ -107,7 +108,11 @@ class Player:
                 self.frame -= 1
             if self.frame == 0:
                 self.direction = "idle"
-            
+
+        if focusfire:
+            pygame.draw.circle(self.gamearea, (250, 80, 250), (self.xpos, self.ypos), 6, 2)
+            pygame.draw.circle(self.gamearea, (255, 230, 255), (self.xpos, self.ypos), 4)
+
     def move(self, changex, changey):
         if self.xpos + 32/2 + changex > self.gamearea.get_width():
             pass
@@ -117,7 +122,7 @@ class Player:
             self.xpos += changex
         if self.ypos + 47/2 + changey > self.gamearea.get_height():
             pass
-        elif self.ypos - 47/2  + changey < 0:
+        elif self.ypos - 47/2 + changey < 0:
             pass
         else:
             self.ypos += changey
