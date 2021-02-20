@@ -14,7 +14,8 @@ gameicon = pygame.image.load("ghost.png")
 pygame.display.set_icon(gameicon)
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 40, True)
-textcolor = (255, 0, 0)
+font2 = pygame.font.SysFont("Arial", 24, False)
+textcolor = (0, 0, 0)
 
 # initialize screen
 screenx = 800
@@ -22,7 +23,7 @@ screeny = 700
 screen = pygame.display.set_mode((screenx, screeny))
 bgcolor = (100, 20, 20)
 gamearea = pygame.Surface((520, 680))
-gacolor = (50, 100, 180)
+gacolor = (150, 200, 250)
 
 # initialize fps
 clock = pygame.time.Clock()
@@ -144,6 +145,9 @@ while True:
         if gameover:
             text = font.render("GAME OVER", True, textcolor)
             gamearea.blit(text, (100, 200))
+            text2 = font2.render("PRESS ENTER TO RESTART", True, textcolor)
+            gamearea.blit(text2, (100, 250))
+
             # reinitialize everything on ENTER key
             if keys[pygame.K_RETURN]:
                 background = Stage()       
