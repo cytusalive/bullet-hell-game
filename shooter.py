@@ -10,6 +10,11 @@ from angle_movement import calculate_new_xy, find_angle
 # initialize pygame
 pygame.init()
 pygame.display.set_caption("Touhou")
+gameicon = pygame.image.load("ghost.png")
+pygame.display.set_icon(gameicon)
+pygame.font.init()
+font = pygame.font.SysFont("Arial", 40, True)
+textcolor = (255, 0, 0)
 
 # initialize screen
 screenx = 800
@@ -116,7 +121,6 @@ while True:
     # draw screen, game area, stage background
     screen.fill(bgcolor)
     gamearea.fill(gacolor)
-    background.draw()
      
     # properly exit when closed
     for event in pygame.event.get():
@@ -138,6 +142,8 @@ while True:
 
     if pause or gameover:
         if gameover:
+            text = font.render("GAME OVER", True, textcolor)
+            gamearea.blit(text, (100, 200))
             # reinitialize everything on ENTER key
             if keys[pygame.K_RETURN]:
                 background = Stage()       
@@ -149,8 +155,9 @@ while True:
                 focusfire = False
                 pause = False
                 gameover = False
-        pass
+        
     else:
+        background.draw()
         # preparing movement from key press
         # determine speed from player state
         if focusfire:
