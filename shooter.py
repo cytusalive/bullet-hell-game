@@ -109,7 +109,8 @@ cd = 0
 focusfire = False
 
 # pausing/ending
-pause = True
+pause = False
+gameover = False
 
 while True:
     # draw screen, game area, stage background
@@ -135,7 +136,19 @@ while True:
     # find a list of keys being pressed
     keys = pygame.key.get_pressed()
 
-    if pause:
+    if pause or gameover:
+        if gameover:
+            # reinitialize everything on ENTER key
+            if keys[pygame.K_RETURN]:
+                background = Stage()       
+                reisen = Player(gamearea)
+                enemies = []
+                player_bullets = []
+                enemy_bullets = []
+                cd = 0
+                focusfire = False
+                pause = False
+                gameover = False
         pass
     else:
         # preparing movement from key press
@@ -255,6 +268,8 @@ while True:
         for b in enemy_bullets:
             if hitdetect(b, reisen, 10):
                 reisen.hp -= b.power
+                if reisen.hp <= 0:
+                    gameover = True
                 continue
             else:
                 nbl.append(b)
