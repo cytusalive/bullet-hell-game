@@ -5,7 +5,7 @@ import math
 from player import Player
 from enemy import Enemy
 from spritesheet_functions import SpriteSheet
-from angle_movement import calculate_new_xy, find_angle
+from angle_movement import calculate_new_xy, find_angle, find_distance
 
 
 # initialize pygame
@@ -66,7 +66,8 @@ class Bullet:
 
 # returns true if 2 positions are within hitradius in distance
 def hitdetect(bullet, target, hitradius):
-    distance = math.sqrt((target.xpos - bullet.xpos)**2 + (target.ypos - bullet.ypos)**2)
+    distance = find_distance(target.xpos, target.ypos, bullet.xpos, bullet.ypos)
+    #distance = math.sqrt((target.xpos - bullet.xpos)**2 + (target.ypos - bullet.ypos)**2)
     if distance < hitradius and distance > -hitradius:
         return True
     return False
@@ -219,7 +220,7 @@ while True:
 
         # enemy spawn timer
         if cd % 180 == 0:
-            enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1, gamearea))
+            enemies.append(Enemy(random.randint(0, gamearea.get_width()), (random.randint(0, gamearea.get_width()), random.randint(0, 400)), 3, 150, gamearea))
         
         # remove enemies when out of screen or hp drop to 0
         to_del = []

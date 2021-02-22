@@ -10,3 +10,6 @@ def find_angle(x1, y1, x2, y2):
     dy = y2 - y1
     rads = math.atan2(dy,dx)
     return rads
+
+def find_distance(x1, y1, x2, y2):
+    return math.sqrt((x2-x1)**2 + (y2-y1)**2)
