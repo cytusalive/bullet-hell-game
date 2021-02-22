@@ -3,6 +3,7 @@ import sys
 import random
 import math
 from player import Player
+from enemy import Enemy
 from spritesheet_functions import SpriteSheet
 from angle_movement import calculate_new_xy, find_angle
 
@@ -37,33 +38,6 @@ class Stage:
         gamearea.blit(self.sprite, (0, 0))
 
 
-class Enemy:
-    
-    def __init__(self, x, y, changex, changey):
-        sprite_sheet = SpriteSheet("ghost.png")
-        image = sprite_sheet.get_image(0, 0, 40, 40)
-        self.image = image
-        self.xpos = x
-        self.ypos = 0
-        self.ydes = y
-        self.changex = changex
-        self.changey = changey
-        self.hp = 200
-    
-    def move(self):
-        if self.ypos < self.ydes:
-            self.ypos += 3
-            return
-        else:
-            self.ydes = 0
-            self.xpos += self.changex
-            if self.xpos > gamearea.get_width() or self.xpos < 0:
-                self.changex *= -1
-                self.xpos += self.changex
-            self.ypos += self.changey
-
-    def draw(self):
-        gamearea.blit(self.image, (self.xpos-20, self.ypos-20))
 
 
 class Bullet:
@@ -245,7 +219,7 @@ while True:
 
         # enemy spawn timer
         if cd % 180 == 0:
-            enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1))
+            enemies.append(Enemy(random.randint(0, gamearea.get_width()), random.randint(0, 100), random.randint(-5, 5), 1, gamearea))
         
         # remove enemies when out of screen or hp drop to 0
         to_del = []
