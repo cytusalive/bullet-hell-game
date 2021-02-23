@@ -37,8 +37,9 @@ class Stage:
     def draw(self):
         gamearea.blit(self.sprite, (0, 0))
 
-
-
+# initialize enemy sprite
+sprite_sheet = SpriteSheet("ghost.png")
+enemy_sprite = sprite_sheet.get_image(0, 0, 40, 40)
 
 class Bullet:
     def __init__(self, x, y, speed, angle, color=(255, 100, 150)):
@@ -220,7 +221,7 @@ while True:
 
         # enemy spawn timer
         if cd % 180 == 0:
-            enemies.append(Enemy(random.randint(0, gamearea.get_width()), (random.randint(0, gamearea.get_width()), random.randint(0, 400)), 3, 150, gamearea))
+            enemies.append(Enemy(random.randint(0, gamearea.get_width()), (random.randint(0, gamearea.get_width()), random.randint(0, 400)), 3, 150, gamearea, enemy_sprite))
         
         # remove enemies when out of screen or hp drop to 0
         to_del = []
