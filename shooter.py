@@ -16,7 +16,8 @@ pygame.display.set_icon(gameicon)
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 40, True)
 font2 = pygame.font.SysFont("Arial", 24, False)
-textcolor = (0, 0, 0)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 # initialize screen
 screenx = 800
@@ -119,9 +120,9 @@ while True:
 
     if pause or gameover:
         if gameover:
-            text = font.render("GAME OVER", True, textcolor)
+            text = font.render("GAME OVER", True, BLACK)
             gamearea.blit(text, (100, 200))
-            text2 = font2.render("PRESS ENTER TO RESTART", True, textcolor)
+            text2 = font2.render("PRESS ENTER TO RESTART", True, BLACK)
             gamearea.blit(text2, (100, 250))
 
             # reinitialize everything on ENTER key
@@ -270,6 +271,19 @@ while True:
                 nbl.append(b)
         enemy_bullets = nbl
     
+    # info display
+    playerhptext = font2.render("Life:", True, WHITE)
+    screen.blit(playerhptext, (600, 100))
+    playerhpbar = [pygame.Surface((20, 20)) for i in range(10)]
+    playerhp = reisen.hp
+    for bar in range(len(playerhpbar)):
+        if playerhp > 0:
+            playerhpbar[bar].fill((120, 0, 255))
+            playerhp -= 10    
+        else:
+            playerhpbar[bar].fill((255, 120, 120))
+        screen.blit(playerhpbar[bar], (560 + 20*bar, 150))
+
     # draw everything on to the screen and tick for 60 fps
     screen.blit(gamearea, (10,10))
     pygame.display.update()

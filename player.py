@@ -70,7 +70,7 @@ class Player:
         self.direction = "idle"
         self.gamearea = gamearea
         self.image = self.idle
-        self.hp = 50
+        self.hp = 100
 
     def draw(self, focusfire):
         if self.direction == "idle":

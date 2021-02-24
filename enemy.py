@@ -23,7 +23,7 @@ class Enemy:
             self.xpos, self.ypos = calculate_new_xy(self.xpos, self.ypos, self.speed, angle)
 
     def draw(self):
-        self.gamearea.blit(self.image, (self.xpos-20, self.ypos-20))
+        self.gamearea.blit(self.image, (self.xpos-self.image.get_width()/2, self.ypos-self.image.get_height()/2))
 
 
 class Boss(Enemy):
