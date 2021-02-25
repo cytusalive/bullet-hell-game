@@ -224,10 +224,15 @@ while True:
         if cd % 180 == 0:
             enemies.append(Enemy(random.randint(0, gamearea.get_width()), (random.randint(0, gamearea.get_width()), random.randint(0, 400)), 3, 150, gamearea, enemy_sprite))
         
-        # remove enemies when out of screen or hp drop to 0
+        # remove enemies that moves out of screen or drop to 0 hp
+        # enemies that dropped to 0 hp has chance to drop an item
         to_del = []
         nel = []
         for e in enemies:
+            if e.hp <= 0:
+                rn = random.randint(1, 5)
+                if rn == 5:
+                    reisen.hp += 10
             if e.ypos < gamearea.get_height() and e.hp > 0:
                 nel.append(e)
             # add index of bullet to delete list if in contact with enemy
@@ -272,8 +277,8 @@ while True:
         enemy_bullets = nbl
     
     # info display
-    playerhptext = font2.render("Life:", True, WHITE)
-    screen.blit(playerhptext, (600, 100))
+    playerhptext = font.render("Life:", True, WHITE)
+    screen.blit(playerhptext, (560, 100))
     playerhpbar = [pygame.Surface((20, 20)) for i in range(10)]
     playerhp = reisen.hp
     for bar in range(len(playerhpbar)):

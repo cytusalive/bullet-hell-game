@@ -6,4 +6,6 @@ TODO: rewrite bullet to separate speed and direction DONE, write hitbox for play
 
 TODO: gameover screen DONE, boss type enemies, game info display
 
+TODO: enemy item drop
+
 TODO: stages
