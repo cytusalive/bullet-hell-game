@@ -2,11 +2,12 @@ import pygame
 import sys
 import random
 import math
+import stages
 from player import Player
-from enemy import Enemy
+from enemy import Enemy, Boss
 from spritesheet_functions import SpriteSheet
 from angle_movement import calculate_new_xy, find_angle, find_distance
-
+from bullets import Bullet, hitdetect
 
 # initialize pygame
 pygame.init()
@@ -30,52 +31,13 @@ gacolor = (150, 200, 250)
 # initialize fps
 clock = pygame.time.Clock()
 
-# stage background
-class Stage:
-    def __init__(self):
-        self.sprite = SpriteSheet("stage.png").get_image(0, 0, 520, 680)
-        
-    def draw(self):
-        gamearea.blit(self.sprite, (0, 0))
 
 # initialize enemy sprite
 sprite_sheet = SpriteSheet("ghost.png")
 enemy_sprite = sprite_sheet.get_image(0, 0, 40, 40)
 
-class Bullet:
-    def __init__(self, x, y, speed, angle, color=(255, 100, 150)):
-        self.xpos = x
-        self.ypos = y
-        self.speed = speed
-        self.angle = angle
-        self.power = 10
-        self.color = color
-        
-    def __repr__(self):
-        return str(self.xpos) + str(self.ypos)
-
-    def draw(self):
-        pygame.draw.circle(gamearea, self.color, (self.xpos, self.ypos), 6, 2)
-        pygame.draw.circle(gamearea, (255, 255, 255), (self.xpos, self.ypos), 4)
-
-    def move(self):
-        self.xpos, self.ypos = calculate_new_xy(self.xpos, self.ypos, self.speed, self.angle)
-        if self.xpos < 0 or self.xpos > gamearea.get_width():
-            return False
-        if self.ypos < 0 or self.ypos > gamearea.get_height():
-            return False
-        return True
-
-# returns true if 2 positions are within hitradius in distance
-def hitdetect(bullet, target, hitradius):
-    distance = find_distance(target.xpos, target.ypos, bullet.xpos, bullet.ypos)
-    #distance = math.sqrt((target.xpos - bullet.xpos)**2 + (target.ypos - bullet.ypos)**2)
-    if distance < hitradius and distance > -hitradius:
-        return True
-    return False
-
 # initializes stage, player
-background = Stage()       
+stage = stages.Stage_01(gamearea)      
 reisen = Player(gamearea)
 
 # allocate an array of enemies
@@ -127,7 +89,7 @@ while True:
 
             # reinitialize everything on ENTER key
             if keys[pygame.K_RETURN]:
-                background = Stage()       
+                stage = stages.Stage_01(gamearea)       
                 reisen = Player(gamearea)
                 enemies = []
                 player_bullets = []
@@ -138,7 +100,7 @@ while True:
                 gameover = False
         
     else:
-        background.draw()
+        stage.draw()
         # preparing movement from key press
         # determine speed from player state
         if focusfire:
@@ -198,18 +160,18 @@ while True:
         focusfire = False
         if keys[pygame.K_z]:
             if cd % 5 == 0:
-                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-90)))
-                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-85)))
-                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-95)))
-                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-80)))
-                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-100)))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-90), gamearea))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-85), gamearea))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-95), gamearea))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-80), gamearea))
+                player_bullets.append(Bullet(reisen.xpos, reisen.ypos - 23, 8, math.radians(-100), gamearea))
         elif keys[pygame.K_x]:
             focusfire = True
             if cd % 5 == 0:
-                player_bullets.append(Bullet(reisen.xpos - 12, reisen.ypos - 18, 8, math.radians(-90)))
-                player_bullets.append(Bullet(reisen.xpos + 12, reisen.ypos - 18, 8, math.radians(-90)))
-                player_bullets.append(Bullet(reisen.xpos - 6, reisen.ypos - 23, 8, math.radians(-90)))
-                player_bullets.append(Bullet(reisen.xpos + 6, reisen.ypos - 23, 8, math.radians(-90)))
+                player_bullets.append(Bullet(reisen.xpos - 12, reisen.ypos - 18, 8, math.radians(-90), gamearea))
+                player_bullets.append(Bullet(reisen.xpos + 12, reisen.ypos - 18, 8, math.radians(-90), gamearea))
+                player_bullets.append(Bullet(reisen.xpos - 6, reisen.ypos - 23, 8, math.radians(-90), gamearea))
+                player_bullets.append(Bullet(reisen.xpos + 6, reisen.ypos - 23, 8, math.radians(-90), gamearea))
 
 
         # removing out of screen bullets with new list
@@ -254,7 +216,8 @@ while True:
             # fires a bullet directly at player by using angle movement functions
             if cd % 60 == 0 and e.ypos <= 600:
                 angle = find_angle(e.xpos, e.ypos, reisen.xpos, reisen.ypos)
-                enemy_bullets.append(Bullet(e.xpos, e.ypos, 3, angle, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))))
+                random_color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                enemy_bullets.append(Bullet(e.xpos, e.ypos, 3, angle, gamearea, random_color))
 
         # player hitbox
         nbl = []
