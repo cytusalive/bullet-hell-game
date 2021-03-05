@@ -41,7 +41,7 @@ stage = stages.Stage_01(gamearea)
 reisen = Player(gamearea)
 
 # allocate an array of enemies
-enemies = []
+# enemies = []
 
 # allocate arrays of player and enemy bullets
 player_bullets = []
@@ -183,8 +183,9 @@ while True:
         player_bullets = nbl
 
         # enemy spawn timer
-        if cd % 180 == 0:
-            enemies.append(Enemy(random.randint(0, gamearea.get_width()), (random.randint(0, gamearea.get_width()), random.randint(0, 400)), 3, 150, gamearea, enemy_sprite))
+        #if cd % 180 == 0:
+        #   enemies.append(Enemy(random.randint(0, gamearea.get_width()), (random.randint(0, gamearea.get_width()), random.randint(0, 400)), 3, 150, gamearea, enemy_sprite))
+        stage.update()
         
         # remove enemies that moves out of screen or drop to 0 hp
         # enemies that dropped to 0 hp has chance to drop an item
